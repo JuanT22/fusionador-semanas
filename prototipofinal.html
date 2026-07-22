@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fusionador de semanas · Canvas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --tinta:#16213d;
+    --tinta-suave:#5d6a86;
+    --papel:#eef1f6;
+    --hoja:#ffffff;
+    --linea:#ccd4e3;
+    --ambar:#f0b429;
+    --union:#1f6f6a;
+    --alerta:#b4453c;
+    --radio:10px;
+    --sans:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:var(--sans);
+    background:var(--papel);
+    color:var(--tinta);
+    line-height:1.55;
+    padding:32px 20px 72px;
+  }
+  .lienzo{max-width:980px;margin:0 auto}
+
+  /* ---------- encabezado ---------- */
+  header{margin-bottom:28px}
+  .rotulo{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--tinta-suave);margin:0 0 6px;
+  }
+  h1{
+    font-size:clamp(1.7rem,3.6vw,2.4rem);font-weight:600;margin:0 0 8px;
+    letter-spacing:-.02em;
+  }
+  h1 em{font-style:normal;color:var(--union)}
+  header p{margin:0;max-width:62ch;color:var(--tinta-suave)}
+
+  /* ---------- tarjetas ---------- */
+  .panel{
+    background:var(--hoja);border:1px solid var(--linea);
+    border-radius:var(--radio);padding:20px;margin-bottom:18px;
+  }
+  .panel h2{
+    font-size:.78rem;font-family:var(--mono);letter-spacing:.12em;
+    text-transform:uppercase;color:var(--tinta-suave);margin:0 0 14px;font-weight:500;
+  }
+
+  /* ---------- zona de carga ---------- */
+  #zona{
+    border:2px dashed var(--linea);border-radius:var(--radio);
+    background:var(--hoja);padding:34px 20px;text-align:center;
+    transition:border-color .15s,background .15s;cursor:pointer;
+  }
+  #zona:hover,#zona:focus-visible{border-color:var(--union)}
+  #zona.encima{border-color:var(--union);background:#f0f8f7}
+  #zona.cargado{border-style:solid;border-color:var(--union);text-align:left;padding:18px 20px}
+  #zona p{margin:0}
+  .zona-titulo{font-weight:600;font-size:1.05rem}
+  .zona-nota{color:var(--tinta-suave);font-size:.9rem;margin-top:6px !important}
+  .archivo-info{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .archivo-info .nombre{font-family:var(--mono);font-weight:500}
+  input[type=file]{display:none}
+
+  /* ---------- opciones ---------- */
+  .opciones{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-end}
+  .campo{display:flex;flex-direction:column;gap:6px}
+  .campo label{font-size:.85rem;font-weight:500}
+  .campo .ayuda{font-size:.78rem;color:var(--tinta-suave)}
+  select,input[type=number]{
+    font-family:var(--sans);font-size:.92rem;padding:7px 10px;
+    border:1px solid var(--linea);border-radius:6px;background:var(--hoja);color:var(--tinta);
+  }
+  input[type=number]{width:80px}
+  .casilla{display:flex;align-items:center;gap:8px;font-size:.9rem}
+
+  /* ---------- botones ---------- */
+  button{
+    font-family:var(--sans);font-size:.92rem;font-weight:500;
+    border-radius:6px;border:1px solid transparent;padding:9px 16px;cursor:pointer;
+    transition:background .15s,border-color .15s,color .15s;
+  }
+  .primario{background:var(--tinta);color:#fff}
+  .primario:hover:not(:disabled){background:#0d1730}
+  .primario:disabled{background:#b9c2d4;cursor:not-allowed}
+  .secundario{background:var(--hoja);border-color:var(--linea);color:var(--tinta)}
+  .secundario:hover{border-color:var(--tinta-suave)}
+  :focus-visible{outline:2px solid var(--union);outline-offset:2px}
+
+  /* ---------- mapa de fusión (elemento firma) ---------- */
+  #mapa{margin:4px 0 2px}
+  .fila-pastillas{display:grid;gap:6px;margin-bottom:0}
+  .pastilla{
+    justify-self:center;width:34px;height:34px;border-radius:50%;
+    display:grid;place-items:center;font-family:var(--mono);font-size:.85rem;font-weight:500;
+    background:var(--papel);border:1px solid var(--linea);
+  }
+  .pastilla.origen{background:#fdf3d8;border-color:var(--ambar)}
+  .pastilla.destino{background:var(--union);border-color:var(--union);color:#fff}
+  .fila-llaves{display:grid;height:22px;margin:2px 0}
+  .llave{
+    border-left:1px solid var(--tinta-suave);border-right:1px solid var(--tinta-suave);
+    border-bottom:1px solid var(--tinta-suave);border-radius:0 0 8px 8px;
+    height:11px;position:relative;align-self:start;margin:0 18%;
+  }
+  .llave::after{
+    content:"";position:absolute;left:50%;top:11px;width:1px;height:11px;
+    background:var(--tinta-suave);
+  }
+  .leyenda-mapa{
+    font-family:var(--mono);font-size:.72rem;color:var(--tinta-suave);
+    text-align:center;margin:12px 0 0;
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .pastilla{animation:aparece .32s ease both}
+    .llave{animation:aparece .32s ease both}
+  }
+  @keyframes aparece{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+  /* ---------- resultados ---------- */
+  .barra-resultados{
+    display:flex;justify-content:space-between;align-items:center;
+    gap:14px;flex-wrap:wrap;margin-bottom:16px;
+  }
+  .conteo{font-size:1.05rem;font-weight:600}
+  .conteo span{font-family:var(--mono);color:var(--union)}
+  .acciones{display:flex;gap:10px;flex-wrap:wrap}
+
+  .semana{border:1px solid var(--linea);border-radius:var(--radio);margin-bottom:12px;background:var(--hoja)}
+  .semana-cab{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 16px;flex-wrap:wrap}
+  .semana-id{display:flex;align-items:baseline;gap:10px}
+  .semana-id strong{font-size:1.05rem}
+  .origenes{font-family:var(--mono);font-size:.8rem;color:var(--tinta-suave)}
+  .notas{list-style:none;margin:0;padding:0 16px 14px;display:flex;flex-direction:column;gap:5px}
+  .notas li{
+    font-family:var(--mono);font-size:.78rem;color:var(--tinta-suave);
+    padding-left:14px;position:relative;
+  }
+  .notas li::before{content:"–";position:absolute;left:0}
+  .notas li.union::before{content:"+";color:var(--union)}
+  .vista{border-top:1px solid var(--linea);padding:0}
+  .vista iframe{width:100%;height:520px;border:0;display:block;background:#fff}
+  .oculto{display:none}
+
+  #error{
+    border:1px solid var(--alerta);background:#fdf1f0;color:#7d2b24;
+    border-radius:var(--radio);padding:14px 16px;margin-bottom:18px;
+  }
+  #error strong{display:block}
+  footer{
+    margin-top:26px;font-size:.8rem;color:var(--tinta-suave);
+    border-top:1px solid var(--linea);padding-top:14px;
+  }
+  footer code{font-family:var(--mono);background:var(--hoja);padding:1px 5px;border-radius:4px}
+</style>
+</head>
+<body>
+<div class="lienzo">
+
+  <header>
+    <p class="rotulo">Páginas de curso · Canvas</p>
+    <h1>Fusiona las semanas <em>de dos en dos</em></h1>
+    <p>Sube el archivo <code>Curso+&lt;ID&gt;.json</code> exportado de Canvas. La página une cada par de semanas
+       respetando el HTML original: un solo resultado de aprendizaje, un solo encabezado por unidad y los temas
+       en orden. Todo se procesa en tu navegador; el archivo no se envía a ningún servidor.</p>
+  </header>
+
+  <div id="error" class="oculto" role="alert"><strong id="error-titulo"></strong><span id="error-detalle"></span></div>
+
+  <div id="zona" tabindex="0" role="button" aria-label="Elegir o soltar el archivo JSON del curso">
+    <p class="zona-titulo">Suelta aquí el JSON del curso</p>
+    <p class="zona-nota">o pulsa para elegirlo · también sirve un archivo con los objetos concatenados</p>
+  </div>
+  <input type="file" id="archivo" accept=".json,application/json,text/plain">
+
+  <div class="panel" id="panel-opciones" style="margin-top:18px">
+    <h2>Cómo fusionar</h2>
+    <div class="opciones">
+      <div class="campo">
+        <label for="grupo">Semanas por grupo</label>
+        <input type="number" id="grupo" value="2" min="2" max="8" step="1">
+        <span class="ayuda">2 = pares (1+2, 3+4…)</span>
+      </div>
+      <div class="campo">
+        <label for="intros">Párrafos de bienvenida repetidos</label>
+        <select id="intros">
+          <option value="primera">Conservar solo el primero</option>
+          <option value="todas">Conservar todos</option>
+        </select>
+        <span class="ayuda">Aplica cuando las dos semanas comparten unidad</span>
+      </div>
+      <div class="campo">
+        <label class="casilla"><input type="checkbox" id="acordeones"> Unir acordeones con el mismo título</label>
+        <span class="ayuda">Por ejemplo, dos “Actividades recomendadas”</span>
+      </div>
+      <button class="primario" id="fusionar" disabled>Fusionar semanas</button>
+    </div>
+  </div>
+
+  <div class="panel oculto" id="panel-resultados">
+    <div class="barra-resultados">
+      <p class="conteo" id="conteo"></p>
+      <div class="acciones">
+        <button class="primario" id="bajar-json">Descargar JSON fusionado</button>
+        <button class="secundario" id="bajar-html">Descargar todos los HTML</button>
+        <button class="secundario" id="bajar-reporte">Descargar reporte</button>
+      </div>
+    </div>
+    <div id="mapa"></div>
+    <div id="lista"></div>
+  </div>
+
+  <footer>
+    ¿Prefieres la terminal? El script <code>fusionar_semanas.py</code> hace lo mismo por lotes:
+    <code>python3 fusionar_semanas.py "Curso+84399.json" -o salida</code>
+  </footer>
+</div>
+
+
+<script type="text/plain" id="css-diseno">
+/*
+* Descripcion: Hoja de estilos para el piloto del metacurso con IA
+* Autor: Ediloja Digital
+*
+* Contenido:
+*
+*    - Menu de navegacion
+*    - Titulos
+*    - Grid
+*    - Tabla
+*    - Recursos
+*    - Media Query 
+*    - Dark Mode 
+*/
+
+/* ==========================================================================
+- Menu de navegacion
+========================================================================== */
+
+.contenedor-estilo .menu-navegacion {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.contenedor-estilo .menu-navegacion p {
+    color: #004170;
+}
+
+.contenedor-estilo .menu-navegacion a.boton-inicio {
+    text-decoration: none !important;
+}
+
+.contenedor-estilo .menu-semanas {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+
+.contenedor-estilo .menu-semanas div.etiqueta p,
+.contenedor-estilo .menu-semanas div.enlaces {
+    background-color: #F4E5BE;
+    padding: 5px 1em;
+    color: #004170;
+}
+
+.contenedor-estilo .menu-navegacion .menu-semanas .enlaces a {
+    padding: 2px 4px;
+    border-radius: 50%;
+    text-decoration: none !important;
+    transition: all 0.5s ease-in;
+}
+
+.contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.azul {
+    color: #FFF;
+    background-color: #004170;
+}
+
+.contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.block {
+    pointer-events: none;
+}
+
+.contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.selected {
+    color: #004170 !important;
+    background-color: #FBBE00 !important;
+    outline: 1px solid #004170;
+}
+
+.contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.amarillo {
+    color: #004170;
+    background-color: #E7EFF2;
+    width: 22px;
+    height: 24px;
+    display: inline-flex;
+    justify-content: center;
+}
+
+.contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.azul:hover,
+.contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.amarillo:hover {
+    color: #004170;
+    background-color: #FBBE00;
+    border: 1px solid #004170;
+    /*padding: 3px 12px;*/
+}
+
+/* ==========================================================================
+- Boton
+========================================================================== */
+
+.contenedor-estilo .estilo-boton {
+    text-decoration: none !important;
+    color: #ffffff;
+    background: #003f72;
+    border-radius: 6px;
+    display: inline-block;
+    padding: 6px 10px;
+    margin: 5px;
+    text-align: center;
+    cursor: pointer;
+    border: 1px solid #ffffff;
+    transition: background-color 0.5s ease-in-out;
+}
+
+.contenedor-estilo .estilo-boton:hover {
+    color: #153B6D;
+    background-color: #eaab00;
+}
+
+/* ==========================================================================
+- Titulos
+========================================================================== */
+
+.contenedor-estilo .titulo-pagina {
+    text-align: center;
+    background-color: #FBBE00;
+    color: #004170;
+    padding: 0.4em 2em;
+
+}
+
+.contenedor-estilo .titulo-semana {
+    text-align: left !important;
+
+}
+
+.contenedor-estilo .titulo-pagina img {
+    float: right;
+    position: relative;
+    top: -10px;
+}
+
+.contenedor-estilo .subtitulo-pagina {
+    padding: 4px;
+    text-align: center;
+    color: #FFF;
+    background-color: #004170;
+}
+
+/* ==========================================================================
+3. Grid
+========================================================================== */
+
+.contenedor-estilo .contenedor-fila {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+/* Cuadro de menu de la pagina de inicio */
+
+.contenedor-estilo .cuadro-menu {
+    background-color: #E7EFF2;
+    border: 1px solid #004170;
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    padding: 2em;
+}
+
+.contenedor-estilo .titulo-icono {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
+
+.contenedor-estilo .titulo-icono p {
+    margin: 0;
+}
+
+.contenedor-estilo .titulo-icono a {
+    display: flex;
+    min-width: 100px;
+    padding: 5px 10px 5px 10px;
+    text-decoration: none !important;
+    border-radius: 0 1em 1em 0;
+    border: 1px solid #004170;
+    transition: background-color 0.5s ease;
+}
+
+.contenedor-estilo .titulo-icono a.blanco {
+    color: #004170;
+    background-color: #FFF;
+}
+
+.contenedor-estilo .titulo-icono a.gris {
+    color: #004170;
+    background-color: #E7EFF2;
+}
+
+.contenedor-estilo .titulo-icono a:hover {
+    color: #FBBE00;
+    background-color: #004170;
+}
+
+/* Pie de pagina */
+.contenedor-estilo .pie-pagina {
+    background-color: #004170;
+}
+
+/* ==========================================================================
+Tabla
+========================================================================== */
+
+.contenedor-estilo .tabla-general {
+    margin-left: auto;
+    margin-right: auto;
+    border-collapse: separate;
+    border-spacing: 5px !important;
+}
+
+.contenedor-estilo .tabla-general tr th {
+    padding: 5px;
+    color: #004170;
+    background-color: #F4E5BE;
+    border: 1px solid #004170;
+}
+
+.contenedor-estilo .tabla-general td {
+    color: #004170;
+    background-color: #E7EFF2;
+    padding: 5px !important;
+    border: 1px solid #004170;
+    margin: 5px;
+}
+
+/* Acordeon */
+
+.contenedor-estilo .acordeon {
+    position: relative;
+    cursor: pointer;
+    margin-bottom: 3px;
+}
+
+.contenedor-estilo .campos-adicionales {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 30px;
+}
+
+.contenedor-estilo .acordeon .etiqueta-acordeon {
+    padding: 0.5em 2em 0.5em 3em;
+    color: #004170;
+    background-color: #F4E5BE;
+    transition: background-color 0.5s ease;
+}
+
+.contenedor-estilo .acordeon .contenido-acordeon {
+    position: relative;
+    height: 0px;
+    overflow: hidden;
+    transition: 0.5s;
+    overflow-y: auto;
+}
+
+.contenedor-estilo .acordeon.active .contenido-acordeon {
+    padding: 0.5em 2em;
+}
+
+.contenedor-estilo .contenedor-actividades {
+    display: grid;
+    grid-gap: 15px;
+    grid-template-columns: repeat(auto-fit, 180px);
+    text-align: center;
+    justify-content: space-evenly;
+}
+
+.contenedor-estilo .acordeon .etiqueta-acordeon::before {
+    content: '+';
+    position: absolute;
+    top: 6px;
+    left: 20px;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.contenedor-estilo .acordeon .plus-right {
+    padding: 0em 3em 0em 2em;
+}
+
+.contenedor-estilo .acordeon .plus-right::before {
+    right: 20px !important;
+    left: auto;
+}
+
+.contenedor-estilo .acordeon.active .etiqueta-acordeon::before {
+    content: '-';
+}
+
+.contenedor-estilo .acordeon.active .etiqueta-acordeon,
+.contenedor-estilo .acordeon:hover .etiqueta-acordeon {
+    color: #004170;
+    background-color: #E7EFF2;
+}
+
+/* Cuadro texto */
+
+.contenedor-estilo .cuadro-texto {
+    padding: 0.3em 2em;
+}
+
+/* Perfil del profesor */
+.contenedor-estilo #fotoPerfil {
+    border-radius: 12px 12px 0 0;
+}
+
+.contenedor-estilo .foto-perfil {
+    margin-bottom: 0;
+}
+
+.contenedor-estilo .detalle-profesor {
+    width: 350px;
+}
+
+.contenedor-estilo .separador-profesor {
+    margin: 0;
+    border: 5px solid #004170;
+}
+
+.contenedor-estilo .nombre-profesor {
+    padding: 5px;
+    color: #FFF;
+    background-color: #004170;
+    border-top: 5px solid #FBBE00;
+    margin-top: 0;
+}
+
+.contenedor-estilo h3.titulo-informacion {
+    padding: 5px 1em;
+    color: #FFF;
+    background-color: #004170;
+    margin-bottom: 0;
+    width: 400px;
+}
+
+.contenedor-estilo .informacion-general {
+    padding: 5px 1em;
+    color: #004170;
+    border: 1px solid #004170;
+    background-color: #F4E5BE;
+    margin-left: 2em;
+    max-width: 350px;
+}
+
+.contenedor-estilo .resultado-aprendizaje {
+    color: #FFF;
+    background-color: #004170;
+    padding: 5px 40px;
+}
+
+.contenedor-estilo .boton-adicional {
+    background-color: #E7EFF2;
+    color: #004170;
+    border: 1px solid #004170;
+    border-radius: 5px 25px 25px 5px;
+    padding: 5px 15px;
+    width: 160px;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none !important;
+}
+
+.contenedor-estilo .boton-adicional:hover {
+    color: #FBBE00;
+    background-color: #004170;
+}
+
+.contenedor-estilo .titulo-bimestre {
+    background: #cfcfcf;
+    padding-right: 15px;
+    color: #004170;
+    text-align: end;
+}
+
+.contenedor-estilo .resultado-aprendizaje h3,
+.contenedor-estilo .titulo-semana,
+.contenedor-estilo .etiqueta-acordeon h3,
+.contenedor-estilo .contenedor-estilo h3 {
+    font-size: 1.2em;
+}
+
+.contenedor-estilo h2 {
+    font-size: 1.6em;
+}
+
+/* ==========================================================================
+Recursos
+========================================================================== */
+
+.contenedor-estilo .contenedor-recurso {
+    margin: 0 auto;
+    max-width: 800px;
+}
+
+.contenedor-estilo .contenedor-recurso div {
+    position: relative;
+}
+
+.contenedor-estilo .contenedor-recurso div iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* ==========================================================================
+Media query
+========================================================================== */
+
+@media screen and (max-width: 540px) {
+
+    .contenedor-estilo .titulo-icono,
+    .contenedor-estilo .menu-semanas,
+    .contenedor-estilo .campos-adicionales,
+    .contenedor-estilo .menu-navegacion {
+        flex-direction: column;
+    }
+
+    .contenedor-estilo .menu-semanas div.enlaces {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+    .contenedor-estilo .menu-semanas div.enlaces span {
+        flex-basis: 100%;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    .contenedor-estilo .campos-adicionales {
+        text-align: center;
+    }
+
+    .contenedor-estilo .titulo-pagina,
+    .acordeon.active .contenido-acordeon {
+        padding: 0;
+    }
+
+    .contenedor-estilo .cuadro-texto {
+        padding: 0 5px;
+    }
+
+    /* Cuadro menu - pagina de inicio */
+
+    .contenedor-estilo .cuadro-menu {
+        display: grid;
+        padding: 1em;
+        gap: 1em;
+        grid-template-columns: 1fr 1fr;
+        width: 100%;
+    }
+
+    .contenedor-estilo .titulo-icono {
+        margin-right: auto;
+    }
+
+    /* Informacion general */
+
+    .contenedor-estilo h3.titulo-informacion {
+        padding: 0;
+        width: 100%;
+    }
+
+    .contenedor-estilo .informacion-general {
+        padding: 0.5em 1em;
+        margin-left: 0;
+    }
+
+
+    /* Acordeon */
+
+    .contenedor-estilo .acordeon .etiqueta-acordeon::before {
+        top: 20px;
+    }
+
+    .contenedor-estilo .acordeon .etiqueta-acordeon h3 {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .contenedor-estilo .acordeon .plus-right::before {
+        top: 8px;
+    }
+}
+
+/* ==========================================================================
+6. Modo oscuro
+========================================================================== */
+
+/* @media (prefers-color-scheme: dark) {
+    .contenedor-estilo .cuadro-texto {
+        background-color: rgba(0, 0, 0, 0.9);
+    }
+} */
+</script>
+<script type="text/plain" id="js-diseno">
+/**
+ * Descripcion: Piloto IA
+ * Autor: Ediloja Digital
+ *
+ * Indice:
+ *
+ *    1. SECCION ACORDEON
+ */
+
+function run_fun_ec() {
+    /* ==========================================================================
+        1. SECCION ACORDEON
+        ========================================================================== */
+
+    // Activar acordeon inicial
+    const accordionActive = document.querySelector('.acordeon.active');
+
+    for (var a = 0; a < accordionActive.childNodes.length; a++) {
+        if (accordionActive.childNodes[a].className == "contenido-acordeon") {
+            panel = accordionActive.childNodes[a];
+            numberPanel = (panel.style.height).replace("px", "");
+            heightPanel = panel.scrollHeight + 10;
+            panel.style.height = heightPanel + "px";
+        }
+    }
+
+    // Activar acorde al clic
+    const accordion = document.getElementsByClassName('acordeon');
+
+    for (let i = 0; i < accordion.length; i++) {
+        accordion[i].addEventListener('click', function () {
+
+            // Si no esta activo
+            if (!this.classList.contains("active")) {
+                // Ocultamos todos los acordeones
+                for (let j = 0; j < accordion.length; j++) {
+                    accordion[j].classList.remove("active");
+                    for (var k = 0; k < accordion[j].childNodes.length; k++) {
+                        if (accordion[j].childNodes[k].className == "contenido-acordeon") {
+                            accordion[j].childNodes[k].removeAttribute('style');
+                        }
+                    }
+                }
+
+                // Activamos el acordeon
+                this.classList.toggle('active');
+
+                for (var a = 0; a < this.childNodes.length; a++) {
+                    if (this.childNodes[a].className == "contenido-acordeon") {
+                        panel = this.childNodes[a];
+                        numberPanel = (panel.style.height).replace("px", "");
+                        heightPanel = panel.scrollHeight + 10;
+                        panel.style.height = heightPanel + "px";
+                    }
+                }
+            } else {
+                // Ocultamos el acordeon
+                this.classList.toggle('active');
+
+                for (var a = 0; a < this.childNodes.length; a++) {
+                    if (this.childNodes[a].className == "contenido-acordeon") {
+                        panel = this.childNodes[a];
+                        panel.style.height = 0;
+                    }
+                }
+            }
+        });
+    }
+}
+
+var var_ec_hd = setInterval(function () {
+    window.onload = function () { run_fun_ec(); }
+}, 600);
+
+clearInterval(var_ec_hd);
+
+var ec_hd = setInterval(function () {
+
+    run_fun_ec();
+
+    clearInterval(ec_hd);
+
+}, 600);
+</script>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   1. Lectura del archivo
+   ===================================================================== */
+const RE_TEMA   = /^\s*(\d+(?:\.\d+)+)\s*\.?\s+\S/;
+const RE_UNIDAD = /unidad\s+(\d+)/i;
+const RE_SEM    = /semana[-_\s]*(\d+)/i;
+
+function separarObjetos(texto){
+  const salida=[]; let prof=0, ini=-1, cadena=false, escape=false;
+  for(let i=0;i<texto.length;i++){
+    const c=texto[i];
+    if(cadena){
+      if(escape) escape=false;
+      else if(c==="\\") escape=true;
+      else if(c==='"') cadena=false;
+      continue;
+    }
+    if(c==='"'){cadena=true;continue;}
+    if(c==="{"){ if(prof===0) ini=i; prof++; }
+    else if(c==="}"){ prof--; if(prof===0&&ini>=0){ salida.push(texto.slice(ini,i+1)); ini=-1; } }
+  }
+  return salida.map(t=>JSON.parse(t));
+}
+
+function leerCurso(texto){
+  texto = texto.trim();
+  try{
+    const datos = JSON.parse(texto);
+    if(Array.isArray(datos)) return datos;
+    if(datos && typeof datos==="object"){
+      for(const clave of ["pages","items","semanas","data"]){
+        if(Array.isArray(datos[clave])) return datos[clave];
+      }
+      return [datos];
+    }
+  }catch(e){ /* se intenta con objetos concatenados */ }
+  const objetos = separarObjetos(texto);
+  if(!objetos.length) throw new Error("No se reconoce el contenido como JSON de páginas de Canvas.");
+  return objetos;
+}
+
+function numeroSemana(sem){
+  for(const clave of ["url","title","html_url"]){
+    const v=sem[clave];
+    if(typeof v==="string"){ const m=v.match(RE_SEM); if(m) return parseInt(m[1],10); }
+  }
+  return 1e6;
+}
+
+/* =====================================================================
+   2. Utilidades de HTML
+   ===================================================================== */
+const salidaDoc = document.implementation.createHTMLDocument("fusion");
+
+const normalizar = el => (el.textContent||"").replace(/\s+/g," ").trim().toLowerCase();
+const tieneClase = (el,c) => el.nodeType===1 && el.classList.contains(c);
+const hijosTag   = el => Array.from(el.children);
+const importar   = el => salidaDoc.importNode(el,true);
+
+function claveTema(texto){
+  const m = texto.match(RE_TEMA);
+  return m ? m[1].split(".").map(Number) : null;
+}
+function comparaTemas(a,b){
+  const n=Math.max(a.length,b.length);
+  for(let i=0;i<n;i++){
+    const x=a[i]??-1, y=b[i]??-1;
+    if(x!==y) return x-y;
+  }
+  return 0;
+}
+function nombreBloque(nodo){
+  if(tieneClase(nodo,"resultado-aprendizaje")){
+    const h = nodo.querySelector("h2,h3,h4");
+    return h ? normalizar(h).replace(/:$/,"") : "resultado de aprendizaje";
+  }
+  const texto = (nodo.textContent||"").replace(/\s+/g," ").trim();
+  return texto ? `“${texto.slice(0,40)}”` : `bloque <${nodo.tagName.toLowerCase()}>`;
+}
+
+function claveUnidad(h3){
+  const t=(h3.textContent||"").replace(/\s+/g," ").trim();
+  const m=t.match(RE_UNIDAD);
+  return m ? "unidad-"+m[1] : t.toLowerCase();
+}
+function esMedia(el){
+  return el.querySelector("iframe,img") !== null ||
+         ["iframe","img","table"].includes(el.tagName.toLowerCase());
+}
+
+/* =====================================================================
+   3. Descomposición de una semana: cabecera + bloques de unidad
+   ===================================================================== */
+function seccionesDe(body, etiqueta){
+  const doc = new DOMParser().parseFromString(body||"", "text/html");
+  const contenedor = doc.querySelector(".contenedor-estilo") || doc.body;
+  const s = {etiqueta, contenedor, menu:null, cabecera:[], unidades:[], pie:null};
+
+  const nuevaUnidad = (h3, clave) => {
+    const u = {h3, clave, cuadros:[], campos:[], acordeones:[], otros:[]};
+    s.unidades.push(u);
+    return u;
+  };
+  let unidad = null;
+
+  for(const nodo of hijosTag(contenedor)){
+    const t = nodo.tagName.toLowerCase();
+    if(t==="br") continue;
+
+    if(tieneClase(nodo,"menu-navegacion")){ s.menu = s.menu||nodo; continue; }
+    if(tieneClase(nodo,"pie-pagina")){ s.pie = s.pie||nodo; continue; }
+
+    if(t==="h3" && tieneClase(nodo,"titulo-semana")){
+      unidad = nuevaUnidad(nodo, claveUnidad(nodo));
+      continue;
+    }
+
+    const esContenido = tieneClase(nodo,"cuadro-texto")
+                     || tieneClase(nodo,"campos-adicionales")
+                     || tieneClase(nodo,"acordeon");
+
+    if(!unidad){
+      // títulos de módulo/bimestre, resultado de aprendizaje...
+      if(!esContenido){ s.cabecera.push(nodo); continue; }
+      unidad = nuevaUnidad(null, etiqueta+"-sin-unidad");
+    }
+
+    if(tieneClase(nodo,"cuadro-texto"))            unidad.cuadros.push({etiqueta, cuadro:nodo});
+    else if(tieneClase(nodo,"campos-adicionales")) unidad.campos.push(...hijosTag(nodo));
+    else if(tieneClase(nodo,"acordeon"))           unidad.acordeones.push({etiqueta, nodo});
+    else                                           unidad.otros.push(nodo);
+  }
+  return s;
+}
+
+/* =====================================================================
+   4. Piezas de la fusión
+   ===================================================================== */
+function construirMenu(modelo, indice, total){
+  if(!modelo) return null;
+  const menu = importar(modelo);
+  const enlaces = menu.querySelector(".enlaces");
+  if(!enlaces) return menu;
+  const base = enlaces.querySelector("a");
+  if(!base) return menu;
+
+  const nuevos=[];
+  for(let i=1;i<=total;i++){
+    const a = base.cloneNode(true);
+    a.classList.remove("selected");
+    if(i===indice) a.classList.add("selected");
+    for(const attr of ["href","data-api-endpoint"]){
+      if(a.hasAttribute(attr)) a.setAttribute(attr, a.getAttribute(attr).replace(/semana-\d+/g,"semana-"+i));
+    }
+    a.textContent = String(i);
+    nuevos.push(a);
+  }
+  enlaces.textContent="";
+  nuevos.forEach((a,i)=>{
+    enlaces.appendChild(a);
+    if(i<nuevos.length-1) enlaces.appendChild(salidaDoc.createTextNode(" "));
+  });
+  return menu;
+}
+
+function fusionarCuadros(cuadros, modoIntros, notas){
+  const nuevo = salidaDoc.createElement("div");
+  nuevo.className = cuadros[0].cuadro.className || "cuadro-texto";
+
+  const media=[], intros=[], temas=[], resto=[];
+  const vistosMedia=new Set(), vistosTemas=new Set();
+  let orden=0;
+
+  for(const {etiqueta,cuadro} of cuadros){
+    for(const hijo of hijosTag(cuadro)){
+      const texto=(hijo.textContent||"").replace(/\s+/g," ").trim();
+      const k=claveTema(texto);
+      if(k){
+        const firma=k.join(".");
+        if(vistosTemas.has(firma)){ notas.push({tipo:"omite",texto:`tema repetido: ${texto.slice(0,60)}`}); continue; }
+        vistosTemas.add(firma);
+        temas.push({k,orden:orden++,nodo:hijo});
+      }else if(esMedia(hijo)){
+        const firma = Array.from(hijo.querySelectorAll("iframe,img,a"))
+          .map(t=>t.getAttribute("src")||t.getAttribute("href")||"").sort().join("|") || texto.slice(0,80);
+        if(vistosMedia.has(firma)) continue;
+        vistosMedia.add(firma);
+        media.push(hijo);
+      }else if(texto){ intros.push({etiqueta,nodo:hijo}); }
+      else{ resto.push(hijo); }
+    }
+  }
+
+  media.forEach(n=>nuevo.appendChild(importar(n)));
+  if(intros.length){
+    if(modoIntros==="todas"){ intros.forEach(i=>nuevo.appendChild(importar(i.nodo))); }
+    else{
+      nuevo.appendChild(importar(intros[0].nodo));
+      intros.slice(1).forEach(i=>notas.push({tipo:"omite",
+        texto:`bienvenida de ${i.etiqueta}: “${(i.nodo.textContent||"").replace(/\s+/g," ").trim().slice(0,80)}”`}));
+    }
+  }
+  temas.sort((a,b)=>comparaTemas(a.k,b.k)||a.orden-b.orden)
+       .forEach(t=>nuevo.appendChild(importar(t.nodo)));
+  resto.forEach(n=>nuevo.appendChild(importar(n)));
+  return nuevo;
+}
+
+function unirAcordeonesPorTitulo(acordeones, notas){
+  const salida=[], indice=new Map();
+  for(const {etiqueta,nodo} of acordeones){
+    const h3=nodo.querySelector("h3");
+    const titulo=h3?normalizar(h3):`__${salida.length}`;
+    if(indice.has(titulo)){
+      const destino=indice.get(titulo).querySelector(".contenido-acordeon");
+      const origen=nodo.querySelector(".contenido-acordeon");
+      if(destino&&origen){
+        hijosTag(origen).forEach(h=>destino.appendChild(importar(h)));
+        notas.push({tipo:"une",texto:`acordeón “${titulo.slice(0,48)}” unido con el de ${etiqueta}`});
+        continue;
+      }
+    }
+    const copia=importar(nodo);
+    indice.set(titulo,copia);
+    salida.push(copia);
+  }
+  return salida;
+}
+
+/* =====================================================================
+   5. Fusión completa de un grupo de semanas
+   ===================================================================== */
+function fusionarBodies(bodies, indice, total, opciones, notas){
+  const secciones = bodies.map(b=>seccionesDe(b.body,b.etiqueta));
+
+  const contenedor = salidaDoc.createElement("div");
+  const cont0 = secciones.find(s=>s.contenedor.classList &&
+                                  s.contenedor.classList.contains("contenedor-estilo"));
+  contenedor.className = cont0 ? cont0.contenedor.className : "contenedor-estilo";
+
+  /* --- menú --- */
+  const menu = construirMenu(secciones.find(s=>s.menu)?.menu, indice, total);
+  if(menu) contenedor.appendChild(menu);
+
+  /* --- cabecera: la de la primera semana encabeza la página.  Si una semana
+         posterior trae un bloque nuevo (p. ej. "Resultado de aprendizaje 2"),
+         baja y se coloca justo encima de la unidad a la que pertenece. --- */
+  const vistos=new Set();
+  const cabeceraInicial=[];
+  const pendientes=new Map();
+
+  secciones.forEach((s,pos)=>{
+    const nuevos=[];
+    for(const nodo of s.cabecera){
+      const firma = normalizar(nodo) || nodo.outerHTML.slice(0,120);
+      if(vistos.has(firma)){
+        notas.push({tipo:"omite",texto:`${nombreBloque(nodo)} repetido (${s.etiqueta})`});
+        continue;
+      }
+      vistos.add(firma);
+      nuevos.push(nodo);
+    }
+    if(!nuevos.length) return;
+
+    if(pos===0 || !s.unidades.length){
+      cabeceraInicial.push(...nuevos);
+    }else{
+      const clave = s.unidades[0].clave;
+      const destino = s.unidades[0].h3
+        ? (s.unidades[0].h3.textContent||"").replace(/\s+/g," ").trim()
+        : "su unidad";
+      if(!pendientes.has(clave)) pendientes.set(clave,[]);
+      pendientes.get(clave).push(...nuevos);
+      nuevos.forEach(nodo=>notas.push({tipo:"une",
+        texto:`${nombreBloque(nodo)} de ${s.etiqueta} colocado sobre “${destino}”`}));
+    }
+  });
+
+  cabeceraInicial.forEach(n=>contenedor.appendChild(importar(n)));
+
+  /* --- unidades: cada una con sus temas, recursos y acordeones --- */
+  const orden=[], grupos=new Map();
+  for(const s of secciones){
+    for(const u of s.unidades){
+      if(!grupos.has(u.clave)){
+        grupos.set(u.clave,{h3:u.h3,cuadros:[],campos:[],acordeones:[],otros:[]});
+        orden.push(u.clave);
+      }else if(u.h3){
+        notas.push({tipo:"une",
+          texto:`“${(u.h3.textContent||"").replace(/\s+/g," ").trim()}” de ${s.etiqueta} agrupada con la anterior`});
+      }
+      const g=grupos.get(u.clave);
+      ["cuadros","campos","acordeones","otros"].forEach(c=>g[c].push(...u[c]));
+    }
+  }
+  if(orden.length>1){
+    notas.push({tipo:"une",
+      texto:`${orden.length} unidades distintas: se mantienen separadas, cada una con su contenido`});
+  }
+
+  const vistosCampos=new Set();
+  let nAcordeones=0;
+
+  for(const clave of orden){
+    const g=grupos.get(clave);
+
+    (pendientes.get(clave)||[]).forEach(n=>contenedor.appendChild(importar(n)));
+
+    if(g.h3) contenedor.appendChild(importar(g.h3));
+
+    if(g.cuadros.length){
+      contenedor.appendChild(fusionarCuadros(g.cuadros,opciones.intros,notas));
+      contenedor.appendChild(salidaDoc.createElement("br"));
+    }
+
+    if(g.campos.length){
+      const div=salidaDoc.createElement("div");
+      div.className="campos-adicionales";
+      for(const c of g.campos){
+        const a=c.querySelector("a");
+        const firma=a&&a.getAttribute("href")?a.getAttribute("href"):normalizar(c);
+        if(vistosCampos.has(firma)){
+          notas.push({tipo:"omite",texto:`enlace repetido: ${normalizar(c).slice(0,50)}`});
+          continue;
+        }
+        vistosCampos.add(firma);
+        div.appendChild(importar(c));
+      }
+      if(div.children.length){
+        contenedor.appendChild(div);
+        contenedor.appendChild(salidaDoc.createElement("br"));
+      }
+    }
+
+    const acordeones = opciones.unirAcordeones
+        ? unirAcordeonesPorTitulo(g.acordeones,notas)
+        : g.acordeones.map(a=>importar(a.nodo));
+
+    for(const ac of acordeones){
+      ac.classList.remove("active");
+      // el JS del piloto exige un único .acordeon.active en la página
+      if(nAcordeones===0) ac.classList.add("active");
+      contenedor.appendChild(ac);
+      nAcordeones++;
+    }
+
+    g.otros.forEach(n=>contenedor.appendChild(importar(n)));
+  }
+
+  /* --- pie --- */
+  const pie=secciones.find(s=>s.pie)?.pie;
+  if(pie) contenedor.appendChild(importar(pie));
+
+  return contenedor.outerHTML.replace(/\u00a0/g,"&nbsp;");
+}
+
+/* =====================================================================
+   6. Vista previa
+   ===================================================================== */
+const recursoTexto = id => (document.getElementById(id)?.textContent || "").trim();
+
+/* La hoja del piloto se apoya en la tipografía que aporta Canvas y no define
+   reglas para <body>. Esto es solo la base mínima para verlo fuera de Canvas. */
+const BASE = `
+body{margin:0;padding:16px;background:#fff;
+     font-family:'Lato Extended','Lato','Helvetica Neue',Helvetica,Arial,sans-serif;
+     font-size:14px;line-height:1.5;color:#2d3b45;}
+.contenedor-estilo{max-width:1100px;margin:0 auto;}
+img{max-width:100%;height:auto;}
+`;
+
+function documentoHTML(titulo, body){
+  const css = recursoTexto("css-diseno");
+  const js  = recursoTexto("js-diseno");
+  const cierre = "<" + "/script>";
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${titulo}</title>
+<style>${BASE}</style>
+<style>${css}</style></head>
+<body>
+${body}
+<script>${js}${cierre}
+</body></html>`;
+}
+
+/* =====================================================================
+   7. Interfaz
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+let semanas=[], resultado=null, nombreBase="Curso";
+
+function mostrarError(titulo, detalle){
+  $("error-titulo").textContent=titulo;
+  $("error-detalle").textContent=detalle||"";
+  $("error").classList.remove("oculto");
+}
+const limpiarError = () => $("error").classList.add("oculto");
+
+function cargarArchivo(file){
+  limpiarError();
+  nombreBase = file.name.replace(/\.json$/i,"") || "Curso";
+  const lector=new FileReader();
+  lector.onerror = () => mostrarError("No se pudo leer el archivo.","Vuelve a intentarlo o elige otro archivo.");
+  lector.onload = () => {
+    try{
+      semanas = leerCurso(String(lector.result));
+      semanas.sort((a,b)=>numeroSemana(a)-numeroSemana(b));
+      if(!semanas.length) throw new Error("El archivo no contiene páginas.");
+      const conBody = semanas.filter(s=>typeof s.body==="string").length;
+      if(!conBody) throw new Error('Ninguna página tiene el campo "body" con HTML.');
+
+      const zona=$("zona");
+      zona.classList.add("cargado");
+      zona.innerHTML = `<div class="archivo-info">
+          <p class="zona-titulo">${semanas.length} semanas detectadas</p>
+          <span class="nombre">${file.name}</span>
+          <span class="zona-nota" style="margin:0">pulsa para cambiar el archivo</span>
+        </div>`;
+      $("fusionar").disabled=false;
+      $("panel-resultados").classList.add("oculto");
+      resultado=null;
+    }catch(err){
+      semanas=[]; $("fusionar").disabled=true;
+      mostrarError("Ese archivo no se pudo interpretar.", err.message);
+    }
+  };
+  lector.readAsText(file,"utf-8");
+}
+
+function dibujarMapa(grupos){
+  const totalOrig = grupos.reduce((n,g)=>n+g.length,0);
+  const cols = `grid-template-columns:repeat(${totalOrig},minmax(28px,1fr))`;
+  let origen="", llaves="", destino="";
+  let col=1;
+  grupos.forEach((g,i)=>{
+    g.forEach(s=>{
+      const n=numeroSemana(s);
+      origen += `<div class="pastilla origen" style="grid-column:${col++}">${n>=1e6?"·":n}</div>`;
+    });
+    const desde=col-g.length;
+    llaves  += `<div class="llave" style="grid-column:${desde}/${col}"></div>`;
+    destino += `<div class="pastilla destino" style="grid-column:${desde}/${col}">${i+1}</div>`;
+  });
+  $("mapa").innerHTML =
+    `<div class="fila-pastillas" style="${cols}">${origen}</div>
+     <div class="fila-llaves" style="${cols}">${llaves}</div>
+     <div class="fila-pastillas" style="${cols}">${destino}</div>
+     <p class="leyenda-mapa">semanas originales → semanas fusionadas</p>`;
+}
+
+function fusionar(){
+  limpiarError();
+  const tam = Math.max(2, Math.min(8, parseInt($("grupo").value,10)||2));
+  const opciones = {intros:$("intros").value, unirAcordeones:$("acordeones").checked};
+
+  const grupos=[];
+  for(let i=0;i<semanas.length;i+=tam) grupos.push(semanas.slice(i,i+tam));
+  const total=grupos.length;
+
+  const nuevas=[], tarjetas=[];
+  const reporte=[`Archivo: ${nombreBase}.json`,
+                 `Semanas originales: ${semanas.length}`,
+                 `Semanas fusionadas: ${total}`,""];
+
+  grupos.forEach((grupo,idx)=>{
+    const i=idx+1;
+    const etiquetas=grupo.map((g,j)=>g.title||g.url||`Página ${j+1}`);
+    const notas=[];
+    const body=fusionarBodies(
+      grupo.map((g,j)=>({etiqueta:etiquetas[j], body:g.body||""})),
+      i,total,opciones,notas);
+
+    const nueva=JSON.parse(JSON.stringify(grupo[0]));
+    nueva.title=`Semana ${i}`;
+    nueva.url=`semana-${i}`;
+    if(typeof nueva.html_url==="string") nueva.html_url=nueva.html_url.replace(/semana-\d+/g,`semana-${i}`);
+    nueva.body=body;
+    const fechas=grupo.map(g=>g.updated_at).filter(Boolean).sort();
+    if(fechas.length) nueva.updated_at=fechas[fechas.length-1];
+    nuevas.push(nueva);
+
+    tarjetas.push({i,etiquetas,notas,body});
+    reporte.push(`Nueva semana ${i}  <-  ${etiquetas.join(", ")}`);
+    notas.forEach(n=>reporte.push(`    ${n.tipo==="une"?"+":"-"} ${n.texto}`));
+    reporte.push("");
+  });
+
+  resultado={nuevas,tarjetas,reporte:reporte.join("\n")};
+
+  $("conteo").innerHTML=`<span>${semanas.length}</span> semanas → <span>${total}</span> semanas`;
+  dibujarMapa(grupos);
+  $("lista").innerHTML = tarjetas.map(t=>`
+    <div class="semana">
+      <div class="semana-cab">
+        <div class="semana-id">
+          <strong>Semana ${t.i}</strong>
+          <span class="origenes">${t.etiquetas.join(" + ")}</span>
+        </div>
+        <div class="acciones">
+          <button class="secundario" data-ver="${t.i}">Ver vista previa</button>
+          <button class="secundario" data-bajar="${t.i}">Descargar HTML</button>
+        </div>
+      </div>
+      ${t.notas.length?`<ul class="notas">${t.notas.map(n=>
+        `<li class="${n.tipo==="une"?"union":""}">${n.texto}</li>`).join("")}</ul>`:""}
+      <div class="vista oculto" id="vista-${t.i}"></div>
+    </div>`).join("");
+  $("panel-resultados").classList.remove("oculto");
+  $("panel-resultados").scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function descargar(nombre, contenido, tipo){
+  const blob=new Blob([contenido],{type:tipo+";charset=utf-8"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url; a.download=nombre;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+
+/* --- eventos --- */
+const zona=$("zona");
+zona.addEventListener("click",()=>$("archivo").click());
+zona.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); $("archivo").click(); }});
+zona.addEventListener("dragover",e=>{e.preventDefault();zona.classList.add("encima");});
+zona.addEventListener("dragleave",()=>zona.classList.remove("encima"));
+zona.addEventListener("drop",e=>{
+  e.preventDefault(); zona.classList.remove("encima");
+  if(e.dataTransfer.files.length) cargarArchivo(e.dataTransfer.files[0]);
+});
+$("archivo").addEventListener("change",e=>{
+  if(e.target.files.length) cargarArchivo(e.target.files[0]);
+  e.target.value="";   // permite volver a elegir el mismo archivo
+});
+$("fusionar").addEventListener("click",()=>{
+  try{ fusionar(); }
+  catch(err){ mostrarError("La fusión se detuvo.", err.message); }
+});
+
+$("lista").addEventListener("click",e=>{
+  const ver=e.target.dataset.ver, bajar=e.target.dataset.bajar;
+  if(ver){
+    const t=resultado.tarjetas.find(x=>String(x.i)===ver);
+    const caja=$("vista-"+ver);
+    if(caja.classList.contains("oculto")){
+      caja.innerHTML=`<iframe title="Vista previa de la semana ${ver}"></iframe>`;
+      caja.querySelector("iframe").srcdoc=documentoHTML(`Semana ${ver}`,t.body);
+      caja.classList.remove("oculto");
+      e.target.textContent="Ocultar vista previa";
+    }else{
+      caja.classList.add("oculto"); caja.innerHTML="";
+      e.target.textContent="Ver vista previa";
+    }
+  }
+  if(bajar){
+    const t=resultado.tarjetas.find(x=>String(x.i)===bajar);
+    descargar(`nueva_semana_${bajar}.html`, documentoHTML(`Semana ${bajar}`,t.body), "text/html");
+  }
+});
+
+$("bajar-json").addEventListener("click",()=>
+  descargar(`${nombreBase}_fusionado.json`, JSON.stringify(resultado.nuevas,null,2), "application/json"));
+$("bajar-reporte").addEventListener("click",()=>
+  descargar("reporte_fusion.txt", resultado.reporte, "text/plain"));
+$("bajar-html").addEventListener("click",()=>{
+  resultado.tarjetas.forEach((t,k)=>setTimeout(()=>
+    descargar(`nueva_semana_${t.i}.html`, documentoHTML(`Semana ${t.i}`,t.body), "text/html"), k*350));
+});
+</script>
+</body>
+</html>
