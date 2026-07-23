@@ -31,7 +31,7 @@
     padding:32px 20px 72px;
   }
   .lienzo{max-width:980px;margin:0 auto}
-
+ 
   /* ---------- encabezado ---------- */
   header{margin-bottom:28px}
   .rotulo{
@@ -44,7 +44,7 @@
   }
   h1 em{font-style:normal;color:var(--union)}
   header p{margin:0;max-width:62ch;color:var(--tinta-suave)}
-
+ 
   /* ---------- tarjetas ---------- */
   .panel{
     background:var(--hoja);border:1px solid var(--linea);
@@ -54,7 +54,7 @@
     font-size:.78rem;font-family:var(--mono);letter-spacing:.12em;
     text-transform:uppercase;color:var(--tinta-suave);margin:0 0 14px;font-weight:500;
   }
-
+ 
   /* ---------- zona de carga ---------- */
   #zona{
     border:2px dashed var(--linea);border-radius:var(--radio);
@@ -70,7 +70,7 @@
   .archivo-info{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
   .archivo-info .nombre{font-family:var(--mono);font-weight:500}
   input[type=file]{display:none}
-
+ 
   /* ---------- opciones ---------- */
   .opciones{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-end}
   .campo{display:flex;flex-direction:column;gap:6px}
@@ -82,7 +82,7 @@
   }
   input[type=number]{width:80px}
   .casilla{display:flex;align-items:center;gap:8px;font-size:.9rem}
-
+ 
   /* ---------- botones ---------- */
   button{
     font-family:var(--sans);font-size:.92rem;font-weight:500;
@@ -95,7 +95,7 @@
   .secundario{background:var(--hoja);border-color:var(--linea);color:var(--tinta)}
   .secundario:hover{border-color:var(--tinta-suave)}
   :focus-visible{outline:2px solid var(--union);outline-offset:2px}
-
+ 
   /* ---------- mapa de fusión (elemento firma) ---------- */
   #mapa{margin:4px 0 2px}
   .fila-pastillas{display:grid;gap:6px;margin-bottom:0}
@@ -125,7 +125,7 @@
     .llave{animation:aparece .32s ease both}
   }
   @keyframes aparece{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-
+ 
   /* ---------- resultados ---------- */
   .barra-resultados{
     display:flex;justify-content:space-between;align-items:center;
@@ -134,7 +134,7 @@
   .conteo{font-size:1.05rem;font-weight:600}
   .conteo span{font-family:var(--mono);color:var(--union)}
   .acciones{display:flex;gap:10px;flex-wrap:wrap}
-
+ 
   .semana{border:1px solid var(--linea);border-radius:var(--radio);margin-bottom:12px;background:var(--hoja)}
   .semana-cab{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:14px 16px;flex-wrap:wrap}
   .semana-id{display:flex;align-items:baseline;gap:10px}
@@ -150,7 +150,7 @@
   .vista{border-top:1px solid var(--linea);padding:0}
   .vista iframe{width:100%;height:520px;border:0;display:block;background:#fff}
   .oculto{display:none}
-
+ 
   #error{
     border:1px solid var(--alerta);background:#fdf1f0;color:#7d2b24;
     border-radius:var(--radio);padding:14px 16px;margin-bottom:18px;
@@ -165,7 +165,7 @@
 </head>
 <body>
 <div class="lienzo">
-
+ 
   <header>
     <p class="rotulo">Páginas de curso · Canvas</p>
     <h1>Fusiona las semanas <em>de dos en dos</em></h1>
@@ -173,15 +173,15 @@
        respetando el HTML original: un solo resultado de aprendizaje, un solo encabezado por unidad y los temas
        en orden. Todo se procesa en tu navegador; el archivo no se envía a ningún servidor.</p>
   </header>
-
+ 
   <div id="error" class="oculto" role="alert"><strong id="error-titulo"></strong><span id="error-detalle"></span></div>
-
+ 
   <div id="zona" tabindex="0" role="button" aria-label="Elegir o soltar el archivo JSON del curso">
     <p class="zona-titulo">Suelta aquí el JSON del curso</p>
     <p class="zona-nota">o pulsa para elegirlo · también sirve un archivo con los objetos concatenados</p>
   </div>
   <input type="file" id="archivo" accept=".json,application/json,text/plain">
-
+ 
   <div class="panel" id="panel-opciones" style="margin-top:18px">
     <h2>Cómo fusionar</h2>
     <div class="opciones">
@@ -205,7 +205,7 @@
       <button class="primario" id="fusionar" disabled>Fusionar semanas</button>
     </div>
   </div>
-
+ 
   <div class="panel oculto" id="panel-resultados">
     <div class="barra-resultados">
       <p class="conteo" id="conteo"></p>
@@ -218,14 +218,14 @@
     <div id="mapa"></div>
     <div id="lista"></div>
   </div>
-
+ 
   <footer>
     ¿Prefieres la terminal? El script <code>fusionar_semanas.py</code> hace lo mismo por lotes:
     <code>python3 fusionar_semanas.py "Curso+84399.json" -o salida</code>
   </footer>
 </div>
-
-
+ 
+ 
 <script type="text/plain" id="css-diseno">
 /*
 * Descripcion: Hoja de estilos para el piloto del metacurso con IA
@@ -241,60 +241,60 @@
 *    - Media Query 
 *    - Dark Mode 
 */
-
+ 
 /* ==========================================================================
 - Menu de navegacion
 ========================================================================== */
-
+ 
 .contenedor-estilo .menu-navegacion {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
-
+ 
 .contenedor-estilo .menu-navegacion p {
     color: #004170;
 }
-
+ 
 .contenedor-estilo .menu-navegacion a.boton-inicio {
     text-decoration: none !important;
 }
-
+ 
 .contenedor-estilo .menu-semanas {
     display: flex;
     align-items: center;
     gap: 1em;
 }
-
+ 
 .contenedor-estilo .menu-semanas div.etiqueta p,
 .contenedor-estilo .menu-semanas div.enlaces {
     background-color: #F4E5BE;
     padding: 5px 1em;
     color: #004170;
 }
-
+ 
 .contenedor-estilo .menu-navegacion .menu-semanas .enlaces a {
     padding: 2px 4px;
     border-radius: 50%;
     text-decoration: none !important;
     transition: all 0.5s ease-in;
 }
-
+ 
 .contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.azul {
     color: #FFF;
     background-color: #004170;
 }
-
+ 
 .contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.block {
     pointer-events: none;
 }
-
+ 
 .contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.selected {
     color: #004170 !important;
     background-color: #FBBE00 !important;
     outline: 1px solid #004170;
 }
-
+ 
 .contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.amarillo {
     color: #004170;
     background-color: #E7EFF2;
@@ -303,7 +303,7 @@
     display: inline-flex;
     justify-content: center;
 }
-
+ 
 .contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.azul:hover,
 .contenedor-estilo .menu-navegacion .menu-semanas .enlaces a.amarillo:hover {
     color: #004170;
@@ -311,11 +311,11 @@
     border: 1px solid #004170;
     /*padding: 3px 12px;*/
 }
-
+ 
 /* ==========================================================================
 - Boton
 ========================================================================== */
-
+ 
 .contenedor-estilo .estilo-boton {
     text-decoration: none !important;
     color: #ffffff;
@@ -329,46 +329,46 @@
     border: 1px solid #ffffff;
     transition: background-color 0.5s ease-in-out;
 }
-
+ 
 .contenedor-estilo .estilo-boton:hover {
     color: #153B6D;
     background-color: #eaab00;
 }
-
+ 
 /* ==========================================================================
 - Titulos
 ========================================================================== */
-
+ 
 .contenedor-estilo .titulo-pagina {
     text-align: center;
     background-color: #FBBE00;
     color: #004170;
     padding: 0.4em 2em;
-
+ 
 }
-
+ 
 .contenedor-estilo .titulo-semana {
     text-align: left !important;
-
+ 
 }
-
+ 
 .contenedor-estilo .titulo-pagina img {
     float: right;
     position: relative;
     top: -10px;
 }
-
+ 
 .contenedor-estilo .subtitulo-pagina {
     padding: 4px;
     text-align: center;
     color: #FFF;
     background-color: #004170;
 }
-
+ 
 /* ==========================================================================
 3. Grid
 ========================================================================== */
-
+ 
 .contenedor-estilo .contenedor-fila {
     width: 100%;
     display: flex;
@@ -376,26 +376,26 @@
     justify-content: space-evenly;
     flex-wrap: wrap;
 }
-
+ 
 /* Cuadro de menu de la pagina de inicio */
-
+ 
 .contenedor-estilo .cuadro-menu {
     background-color: #E7EFF2;
     border: 1px solid #004170;
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     padding: 2em;
 }
-
+ 
 .contenedor-estilo .titulo-icono {
     display: flex;
     align-items: center;
     gap: 1em;
 }
-
+ 
 .contenedor-estilo .titulo-icono p {
     margin: 0;
 }
-
+ 
 .contenedor-estilo .titulo-icono a {
     display: flex;
     min-width: 100px;
@@ -405,45 +405,45 @@
     border: 1px solid #004170;
     transition: background-color 0.5s ease;
 }
-
+ 
 .contenedor-estilo .titulo-icono a.blanco {
     color: #004170;
     background-color: #FFF;
 }
-
+ 
 .contenedor-estilo .titulo-icono a.gris {
     color: #004170;
     background-color: #E7EFF2;
 }
-
+ 
 .contenedor-estilo .titulo-icono a:hover {
     color: #FBBE00;
     background-color: #004170;
 }
-
+ 
 /* Pie de pagina */
 .contenedor-estilo .pie-pagina {
     background-color: #004170;
 }
-
+ 
 /* ==========================================================================
 Tabla
 ========================================================================== */
-
+ 
 .contenedor-estilo .tabla-general {
     margin-left: auto;
     margin-right: auto;
     border-collapse: separate;
     border-spacing: 5px !important;
 }
-
+ 
 .contenedor-estilo .tabla-general tr th {
     padding: 5px;
     color: #004170;
     background-color: #F4E5BE;
     border: 1px solid #004170;
 }
-
+ 
 .contenedor-estilo .tabla-general td {
     color: #004170;
     background-color: #E7EFF2;
@@ -451,29 +451,29 @@ Tabla
     border: 1px solid #004170;
     margin: 5px;
 }
-
+ 
 /* Acordeon */
-
+ 
 .contenedor-estilo .acordeon {
     position: relative;
     cursor: pointer;
     margin-bottom: 3px;
 }
-
+ 
 .contenedor-estilo .campos-adicionales {
     display: flex;
     flex-direction: row;
     justify-content: center;
     gap: 30px;
 }
-
+ 
 .contenedor-estilo .acordeon .etiqueta-acordeon {
     padding: 0.5em 2em 0.5em 3em;
     color: #004170;
     background-color: #F4E5BE;
     transition: background-color 0.5s ease;
 }
-
+ 
 .contenedor-estilo .acordeon .contenido-acordeon {
     position: relative;
     height: 0px;
@@ -481,11 +481,11 @@ Tabla
     transition: 0.5s;
     overflow-y: auto;
 }
-
+ 
 .contenedor-estilo .acordeon.active .contenido-acordeon {
     padding: 0.5em 2em;
 }
-
+ 
 .contenedor-estilo .contenedor-actividades {
     display: grid;
     grid-gap: 15px;
@@ -493,7 +493,7 @@ Tabla
     text-align: center;
     justify-content: space-evenly;
 }
-
+ 
 .contenedor-estilo .acordeon .etiqueta-acordeon::before {
     content: '+';
     position: absolute;
@@ -502,50 +502,50 @@ Tabla
     font-size: 1.5em;
     font-weight: bold;
 }
-
+ 
 .contenedor-estilo .acordeon .plus-right {
     padding: 0em 3em 0em 2em;
 }
-
+ 
 .contenedor-estilo .acordeon .plus-right::before {
     right: 20px !important;
     left: auto;
 }
-
+ 
 .contenedor-estilo .acordeon.active .etiqueta-acordeon::before {
     content: '-';
 }
-
+ 
 .contenedor-estilo .acordeon.active .etiqueta-acordeon,
 .contenedor-estilo .acordeon:hover .etiqueta-acordeon {
     color: #004170;
     background-color: #E7EFF2;
 }
-
+ 
 /* Cuadro texto */
-
+ 
 .contenedor-estilo .cuadro-texto {
     padding: 0.3em 2em;
 }
-
+ 
 /* Perfil del profesor */
 .contenedor-estilo #fotoPerfil {
     border-radius: 12px 12px 0 0;
 }
-
+ 
 .contenedor-estilo .foto-perfil {
     margin-bottom: 0;
 }
-
+ 
 .contenedor-estilo .detalle-profesor {
     width: 350px;
 }
-
+ 
 .contenedor-estilo .separador-profesor {
     margin: 0;
     border: 5px solid #004170;
 }
-
+ 
 .contenedor-estilo .nombre-profesor {
     padding: 5px;
     color: #FFF;
@@ -553,7 +553,7 @@ Tabla
     border-top: 5px solid #FBBE00;
     margin-top: 0;
 }
-
+ 
 .contenedor-estilo h3.titulo-informacion {
     padding: 5px 1em;
     color: #FFF;
@@ -561,7 +561,7 @@ Tabla
     margin-bottom: 0;
     width: 400px;
 }
-
+ 
 .contenedor-estilo .informacion-general {
     padding: 5px 1em;
     color: #004170;
@@ -570,13 +570,13 @@ Tabla
     margin-left: 2em;
     max-width: 350px;
 }
-
+ 
 .contenedor-estilo .resultado-aprendizaje {
     color: #FFF;
     background-color: #004170;
     padding: 5px 40px;
 }
-
+ 
 .contenedor-estilo .boton-adicional {
     background-color: #E7EFF2;
     color: #004170;
@@ -588,90 +588,90 @@ Tabla
     display: inline-block;
     text-decoration: none !important;
 }
-
+ 
 .contenedor-estilo .boton-adicional:hover {
     color: #FBBE00;
     background-color: #004170;
 }
-
+ 
 .contenedor-estilo .titulo-bimestre {
     background: #cfcfcf;
     padding-right: 15px;
     color: #004170;
     text-align: end;
 }
-
+ 
 .contenedor-estilo .resultado-aprendizaje h3,
 .contenedor-estilo .titulo-semana,
 .contenedor-estilo .etiqueta-acordeon h3,
 .contenedor-estilo .contenedor-estilo h3 {
     font-size: 1.2em;
 }
-
+ 
 .contenedor-estilo h2 {
     font-size: 1.6em;
 }
-
+ 
 /* ==========================================================================
 Recursos
 ========================================================================== */
-
+ 
 .contenedor-estilo .contenedor-recurso {
     margin: 0 auto;
     max-width: 800px;
 }
-
+ 
 .contenedor-estilo .contenedor-recurso div {
     position: relative;
 }
-
+ 
 .contenedor-estilo .contenedor-recurso div iframe {
     position: absolute;
     top: 0;
     left: 0;
 }
-
+ 
 /* ==========================================================================
 Media query
 ========================================================================== */
-
+ 
 @media screen and (max-width: 540px) {
-
+ 
     .contenedor-estilo .titulo-icono,
     .contenedor-estilo .menu-semanas,
     .contenedor-estilo .campos-adicionales,
     .contenedor-estilo .menu-navegacion {
         flex-direction: column;
     }
-
+ 
     .contenedor-estilo .menu-semanas div.enlaces {
         width: 100%;
         display: flex;
         flex-wrap: wrap;
         justify-content: space-around;
     }
-
+ 
     .contenedor-estilo .menu-semanas div.enlaces span {
         flex-basis: 100%;
         text-align: center;
         margin-bottom: 5px;
     }
-
+ 
     .contenedor-estilo .campos-adicionales {
         text-align: center;
     }
-
+ 
     .contenedor-estilo .titulo-pagina,
     .acordeon.active .contenido-acordeon {
         padding: 0;
     }
-
+ 
     .contenedor-estilo .cuadro-texto {
         padding: 0 5px;
     }
-
+ 
     /* Cuadro menu - pagina de inicio */
-
+ 
     .contenedor-estilo .cuadro-menu {
         display: grid;
         padding: 1em;
@@ -679,45 +679,45 @@ Media query
         grid-template-columns: 1fr 1fr;
         width: 100%;
     }
-
+ 
     .contenedor-estilo .titulo-icono {
         margin-right: auto;
     }
-
+ 
     /* Informacion general */
-
+ 
     .contenedor-estilo h3.titulo-informacion {
         padding: 0;
         width: 100%;
     }
-
+ 
     .contenedor-estilo .informacion-general {
         padding: 0.5em 1em;
         margin-left: 0;
     }
-
-
+ 
+ 
     /* Acordeon */
-
+ 
     .contenedor-estilo .acordeon .etiqueta-acordeon::before {
         top: 20px;
     }
-
+ 
     .contenedor-estilo .acordeon .etiqueta-acordeon h3 {
         display: flex;
         align-items: center;
         justify-content: flex-start;
     }
-
+ 
     .contenedor-estilo .acordeon .plus-right::before {
         top: 8px;
     }
 }
-
+ 
 /* ==========================================================================
 6. Modo oscuro
 ========================================================================== */
-
+ 
 /* @media (prefers-color-scheme: dark) {
     .contenedor-estilo .cuadro-texto {
         background-color: rgba(0, 0, 0, 0.9);
@@ -733,15 +733,15 @@ Media query
  *
  *    1. SECCION ACORDEON
  */
-
+ 
 function run_fun_ec() {
     /* ==========================================================================
         1. SECCION ACORDEON
         ========================================================================== */
-
+ 
     // Activar acordeon inicial
     const accordionActive = document.querySelector('.acordeon.active');
-
+ 
     for (var a = 0; a < accordionActive.childNodes.length; a++) {
         if (accordionActive.childNodes[a].className == "contenido-acordeon") {
             panel = accordionActive.childNodes[a];
@@ -750,13 +750,13 @@ function run_fun_ec() {
             panel.style.height = heightPanel + "px";
         }
     }
-
+ 
     // Activar acorde al clic
     const accordion = document.getElementsByClassName('acordeon');
-
+ 
     for (let i = 0; i < accordion.length; i++) {
         accordion[i].addEventListener('click', function () {
-
+ 
             // Si no esta activo
             if (!this.classList.contains("active")) {
                 // Ocultamos todos los acordeones
@@ -768,10 +768,10 @@ function run_fun_ec() {
                         }
                     }
                 }
-
+ 
                 // Activamos el acordeon
                 this.classList.toggle('active');
-
+ 
                 for (var a = 0; a < this.childNodes.length; a++) {
                     if (this.childNodes[a].className == "contenido-acordeon") {
                         panel = this.childNodes[a];
@@ -783,7 +783,7 @@ function run_fun_ec() {
             } else {
                 // Ocultamos el acordeon
                 this.classList.toggle('active');
-
+ 
                 for (var a = 0; a < this.childNodes.length; a++) {
                     if (this.childNodes[a].className == "contenido-acordeon") {
                         panel = this.childNodes[a];
@@ -794,32 +794,32 @@ function run_fun_ec() {
         });
     }
 }
-
+ 
 var var_ec_hd = setInterval(function () {
     window.onload = function () { run_fun_ec(); }
 }, 600);
-
+ 
 clearInterval(var_ec_hd);
-
+ 
 var ec_hd = setInterval(function () {
-
+ 
     run_fun_ec();
-
+ 
     clearInterval(ec_hd);
-
+ 
 }, 600);
 </script>
-
+ 
 <script>
 "use strict";
-
+ 
 /* =====================================================================
    1. Lectura del archivo
    ===================================================================== */
 const RE_TEMA   = /^\s*(\d+(?:\.\d+)+)\s*\.?\s+\S/;
 const RE_UNIDAD = /unidad\s+(\d+)/i;
 const RE_SEM    = /semana[-_\s]*(\d+)/i;
-
+ 
 function separarObjetos(texto){
   const salida=[]; let prof=0, ini=-1, cadena=false, escape=false;
   for(let i=0;i<texto.length;i++){
@@ -836,7 +836,7 @@ function separarObjetos(texto){
   }
   return salida.map(t=>JSON.parse(t));
 }
-
+ 
 function leerCurso(texto){
   texto = texto.trim();
   try{
@@ -853,7 +853,7 @@ function leerCurso(texto){
   if(!objetos.length) throw new Error("No se reconoce el contenido como JSON de páginas de Canvas.");
   return objetos;
 }
-
+ 
 function numeroSemana(sem){
   for(const clave of ["url","title","html_url"]){
     const v=sem[clave];
@@ -861,17 +861,17 @@ function numeroSemana(sem){
   }
   return 1e6;
 }
-
+ 
 /* =====================================================================
    2. Utilidades de HTML
    ===================================================================== */
 const salidaDoc = document.implementation.createHTMLDocument("fusion");
-
+ 
 const normalizar = el => (el.textContent||"").replace(/\s+/g," ").trim().toLowerCase();
 const tieneClase = (el,c) => el.nodeType===1 && el.classList.contains(c);
 const hijosTag   = el => Array.from(el.children);
 const importar   = el => salidaDoc.importNode(el,true);
-
+ 
 function claveTema(texto){
   const m = texto.match(RE_TEMA);
   return m ? m[1].split(".").map(Number) : null;
@@ -892,7 +892,7 @@ function nombreBloque(nodo){
   const texto = (nodo.textContent||"").replace(/\s+/g," ").trim();
   return texto ? `“${texto.slice(0,40)}”` : `bloque <${nodo.tagName.toLowerCase()}>`;
 }
-
+ 
 function claveUnidad(h3){
   const t=(h3.textContent||"").replace(/\s+/g," ").trim();
   const m=t.match(RE_UNIDAD);
@@ -902,7 +902,7 @@ function esMedia(el){
   return el.querySelector("iframe,img") !== null ||
          ["iframe","img","table"].includes(el.tagName.toLowerCase());
 }
-
+ 
 /* =====================================================================
    3. Descomposición de una semana: cabecera + bloques de unidad
    ===================================================================== */
@@ -910,36 +910,36 @@ function seccionesDe(body, etiqueta){
   const doc = new DOMParser().parseFromString(body||"", "text/html");
   const contenedor = doc.querySelector(".contenedor-estilo") || doc.body;
   const s = {etiqueta, contenedor, menu:null, cabecera:[], unidades:[], pie:null};
-
+ 
   const nuevaUnidad = (h3, clave) => {
     const u = {h3, clave, cuadros:[], campos:[], acordeones:[], otros:[]};
     s.unidades.push(u);
     return u;
   };
   let unidad = null;
-
+ 
   for(const nodo of hijosTag(contenedor)){
     const t = nodo.tagName.toLowerCase();
     if(t==="br") continue;
-
+ 
     if(tieneClase(nodo,"menu-navegacion")){ s.menu = s.menu||nodo; continue; }
     if(tieneClase(nodo,"pie-pagina")){ s.pie = s.pie||nodo; continue; }
-
+ 
     if(t==="h3" && tieneClase(nodo,"titulo-semana")){
       unidad = nuevaUnidad(nodo, claveUnidad(nodo));
       continue;
     }
-
+ 
     const esContenido = tieneClase(nodo,"cuadro-texto")
                      || tieneClase(nodo,"campos-adicionales")
                      || tieneClase(nodo,"acordeon");
-
+ 
     if(!unidad){
       // títulos de módulo/bimestre, resultado de aprendizaje...
       if(!esContenido){ s.cabecera.push(nodo); continue; }
       unidad = nuevaUnidad(null, etiqueta+"-sin-unidad");
     }
-
+ 
     if(tieneClase(nodo,"cuadro-texto"))            unidad.cuadros.push({etiqueta, cuadro:nodo});
     else if(tieneClase(nodo,"campos-adicionales")) unidad.campos.push(...hijosTag(nodo));
     else if(tieneClase(nodo,"acordeon"))           unidad.acordeones.push({etiqueta, nodo});
@@ -947,20 +947,25 @@ function seccionesDe(body, etiqueta){
   }
   return s;
 }
-
+ 
 /* =====================================================================
    4. Piezas de la fusión
    ===================================================================== */
 function construirMenu(modelo, indice, total){
+  /* Algunos cursos reparten los enlaces en más de un .enlaces (p. ej. una
+     fila por bimestre); se tratan como una sola lista y se regeneran en
+     tantos bloques como traía el original, repartiendo el nuevo total en
+     la misma proporción por bloque. */
   if(!modelo) return null;
   const menu = importar(modelo);
-  const enlaces = menu.querySelector(".enlaces");
-  if(!enlaces) return menu;
-  const base = enlaces.querySelector("a");
-  if(!base) return menu;
-
-  const nuevos=[];
-  for(let i=1;i<=total;i++){
+  const bloques = Array.from(menu.querySelectorAll(".enlaces"));
+  if(!bloques.length) return menu;
+ 
+  const todos = bloques.flatMap(b=>Array.from(b.querySelectorAll("a")));
+  if(!todos.length) return menu;
+  const base = todos[0];
+ 
+  const nuevoEnlace = i => {
     const a = base.cloneNode(true);
     a.classList.remove("selected");
     if(i===indice) a.classList.add("selected");
@@ -968,24 +973,49 @@ function construirMenu(modelo, indice, total){
       if(a.hasAttribute(attr)) a.setAttribute(attr, a.getAttribute(attr).replace(/semana-\d+/g,"semana-"+i));
     }
     a.textContent = String(i);
-    nuevos.push(a);
+    return a;
+  };
+ 
+  const llenar = (bloque, numeros) => {
+    bloque.textContent = "";
+    numeros.forEach((i,pos)=>{
+      bloque.appendChild(nuevoEnlace(i));
+      if(pos < numeros.length-1) bloque.appendChild(salidaDoc.createTextNode(" "));
+    });
+  };
+ 
+  if(bloques.length===1 || total<=bloques.length){
+    llenar(bloques[0], Array.from({length:total},(_,k)=>k+1));
+    bloques.slice(1).forEach(b=>b.remove());
+  }else{
+    const proporciones = bloques.map(b=>b.querySelectorAll("a").length);
+    const pesoTotal = proporciones.reduce((a,b)=>a+b,0) || bloques.length;
+    let restante = total, numero = 1;
+    bloques.forEach((bloque, k)=>{
+      let cantidad;
+      if(k === bloques.length-1){
+        cantidad = restante;
+      }else{
+        cantidad = Math.max(1, Math.round(total * proporciones[k] / pesoTotal));
+        cantidad = Math.min(cantidad, restante - (bloques.length - k - 1));
+      }
+      llenar(bloque, Array.from({length:cantidad},(_,j)=>numero+j));
+      numero += cantidad;
+      restante -= cantidad;
+    });
   }
-  enlaces.textContent="";
-  nuevos.forEach((a,i)=>{
-    enlaces.appendChild(a);
-    if(i<nuevos.length-1) enlaces.appendChild(salidaDoc.createTextNode(" "));
-  });
+ 
   return menu;
 }
-
+ 
 function fusionarCuadros(cuadros, modoIntros, notas){
   const nuevo = salidaDoc.createElement("div");
   nuevo.className = cuadros[0].cuadro.className || "cuadro-texto";
-
+ 
   const media=[], intros=[], temas=[], resto=[];
   const vistosMedia=new Set(), vistosTemas=new Set();
   let orden=0;
-
+ 
   for(const {etiqueta,cuadro} of cuadros){
     for(const hijo of hijosTag(cuadro)){
       const texto=(hijo.textContent||"").replace(/\s+/g," ").trim();
@@ -1005,7 +1035,7 @@ function fusionarCuadros(cuadros, modoIntros, notas){
       else{ resto.push(hijo); }
     }
   }
-
+ 
   media.forEach(n=>nuevo.appendChild(importar(n)));
   if(intros.length){
     if(modoIntros==="todas"){ intros.forEach(i=>nuevo.appendChild(importar(i.nodo))); }
@@ -1020,7 +1050,7 @@ function fusionarCuadros(cuadros, modoIntros, notas){
   resto.forEach(n=>nuevo.appendChild(importar(n)));
   return nuevo;
 }
-
+ 
 function unirAcordeonesPorTitulo(acordeones, notas){
   const salida=[], indice=new Map();
   for(const {etiqueta,nodo} of acordeones){
@@ -1041,29 +1071,29 @@ function unirAcordeonesPorTitulo(acordeones, notas){
   }
   return salida;
 }
-
+ 
 /* =====================================================================
    5. Fusión completa de un grupo de semanas
    ===================================================================== */
 function fusionarBodies(bodies, indice, total, opciones, notas){
   const secciones = bodies.map(b=>seccionesDe(b.body,b.etiqueta));
-
+ 
   const contenedor = salidaDoc.createElement("div");
   const cont0 = secciones.find(s=>s.contenedor.classList &&
                                   s.contenedor.classList.contains("contenedor-estilo"));
   contenedor.className = cont0 ? cont0.contenedor.className : "contenedor-estilo";
-
+ 
   /* --- menú --- */
   const menu = construirMenu(secciones.find(s=>s.menu)?.menu, indice, total);
   if(menu) contenedor.appendChild(menu);
-
+ 
   /* --- cabecera: la de la primera semana encabeza la página.  Si una semana
          posterior trae un bloque nuevo (p. ej. "Resultado de aprendizaje 2"),
          baja y se coloca justo encima de la unidad a la que pertenece. --- */
   const vistos=new Set();
   const cabeceraInicial=[];
   const pendientes=new Map();
-
+ 
   secciones.forEach((s,pos)=>{
     const nuevos=[];
     for(const nodo of s.cabecera){
@@ -1076,7 +1106,7 @@ function fusionarBodies(bodies, indice, total, opciones, notas){
       nuevos.push(nodo);
     }
     if(!nuevos.length) return;
-
+ 
     if(pos===0 || !s.unidades.length){
       cabeceraInicial.push(...nuevos);
     }else{
@@ -1090,9 +1120,9 @@ function fusionarBodies(bodies, indice, total, opciones, notas){
         texto:`${nombreBloque(nodo)} de ${s.etiqueta} colocado sobre “${destino}”`}));
     }
   });
-
+ 
   cabeceraInicial.forEach(n=>contenedor.appendChild(importar(n)));
-
+ 
   /* --- unidades: cada una con sus temas, recursos y acordeones --- */
   const orden=[], grupos=new Map();
   for(const s of secciones){
@@ -1112,22 +1142,22 @@ function fusionarBodies(bodies, indice, total, opciones, notas){
     notas.push({tipo:"une",
       texto:`${orden.length} unidades distintas: se mantienen separadas, cada una con su contenido`});
   }
-
+ 
   const vistosCampos=new Set();
   let nAcordeones=0;
-
+ 
   for(const clave of orden){
     const g=grupos.get(clave);
-
+ 
     (pendientes.get(clave)||[]).forEach(n=>contenedor.appendChild(importar(n)));
-
+ 
     if(g.h3) contenedor.appendChild(importar(g.h3));
-
+ 
     if(g.cuadros.length){
       contenedor.appendChild(fusionarCuadros(g.cuadros,opciones.intros,notas));
       contenedor.appendChild(salidaDoc.createElement("br"));
     }
-
+ 
     if(g.campos.length){
       const div=salidaDoc.createElement("div");
       div.className="campos-adicionales";
@@ -1146,11 +1176,11 @@ function fusionarBodies(bodies, indice, total, opciones, notas){
         contenedor.appendChild(salidaDoc.createElement("br"));
       }
     }
-
+ 
     const acordeones = opciones.unirAcordeones
         ? unirAcordeonesPorTitulo(g.acordeones,notas)
         : g.acordeones.map(a=>importar(a.nodo));
-
+ 
     for(const ac of acordeones){
       ac.classList.remove("active");
       // el JS del piloto exige un único .acordeon.active en la página
@@ -1158,22 +1188,22 @@ function fusionarBodies(bodies, indice, total, opciones, notas){
       contenedor.appendChild(ac);
       nAcordeones++;
     }
-
+ 
     g.otros.forEach(n=>contenedor.appendChild(importar(n)));
   }
-
+ 
   /* --- pie --- */
   const pie=secciones.find(s=>s.pie)?.pie;
   if(pie) contenedor.appendChild(importar(pie));
-
+ 
   return contenedor.outerHTML.replace(/\u00a0/g,"&nbsp;");
 }
-
+ 
 /* =====================================================================
    6. Vista previa
    ===================================================================== */
 const recursoTexto = id => (document.getElementById(id)?.textContent || "").trim();
-
+ 
 /* La hoja del piloto se apoya en la tipografía que aporta Canvas y no define
    reglas para <body>. Esto es solo la base mínima para verlo fuera de Canvas. */
 const BASE = `
@@ -1183,7 +1213,7 @@ body{margin:0;padding:16px;background:#fff;
 .contenedor-estilo{max-width:1100px;margin:0 auto;}
 img{max-width:100%;height:auto;}
 `;
-
+ 
 function documentoHTML(titulo, body){
   const css = recursoTexto("css-diseno");
   const js  = recursoTexto("js-diseno");
@@ -1199,20 +1229,20 @@ ${body}
 <script>${js}${cierre}
 </body></html>`;
 }
-
+ 
 /* =====================================================================
    7. Interfaz
    ===================================================================== */
 const $ = id => document.getElementById(id);
 let semanas=[], resultado=null, nombreBase="Curso";
-
+ 
 function mostrarError(titulo, detalle){
   $("error-titulo").textContent=titulo;
   $("error-detalle").textContent=detalle||"";
   $("error").classList.remove("oculto");
 }
 const limpiarError = () => $("error").classList.add("oculto");
-
+ 
 function cargarArchivo(file){
   limpiarError();
   nombreBase = file.name.replace(/\.json$/i,"") || "Curso";
@@ -1225,7 +1255,7 @@ function cargarArchivo(file){
       if(!semanas.length) throw new Error("El archivo no contiene páginas.");
       const conBody = semanas.filter(s=>typeof s.body==="string").length;
       if(!conBody) throw new Error('Ninguna página tiene el campo "body" con HTML.');
-
+ 
       const zona=$("zona");
       zona.classList.add("cargado");
       zona.innerHTML = `<div class="archivo-info">
@@ -1243,7 +1273,7 @@ function cargarArchivo(file){
   };
   lector.readAsText(file,"utf-8");
 }
-
+ 
 function dibujarMapa(grupos){
   const totalOrig = grupos.reduce((n,g)=>n+g.length,0);
   const cols = `grid-template-columns:repeat(${totalOrig},minmax(28px,1fr))`;
@@ -1264,21 +1294,21 @@ function dibujarMapa(grupos){
      <div class="fila-pastillas" style="${cols}">${destino}</div>
      <p class="leyenda-mapa">semanas originales → semanas fusionadas</p>`;
 }
-
+ 
 function fusionar(){
   limpiarError();
   const tam = Math.max(2, Math.min(8, parseInt($("grupo").value,10)||2));
   const opciones = {intros:$("intros").value, unirAcordeones:$("acordeones").checked};
-
+ 
   const grupos=[];
   for(let i=0;i<semanas.length;i+=tam) grupos.push(semanas.slice(i,i+tam));
   const total=grupos.length;
-
+ 
   const nuevas=[], tarjetas=[];
   const reporte=[`Archivo: ${nombreBase}.json`,
                  `Semanas originales: ${semanas.length}`,
                  `Semanas fusionadas: ${total}`,""];
-
+ 
   grupos.forEach((grupo,idx)=>{
     const i=idx+1;
     const etiquetas=grupo.map((g,j)=>g.title||g.url||`Página ${j+1}`);
@@ -1286,7 +1316,7 @@ function fusionar(){
     const body=fusionarBodies(
       grupo.map((g,j)=>({etiqueta:etiquetas[j], body:g.body||""})),
       i,total,opciones,notas);
-
+ 
     const nueva=JSON.parse(JSON.stringify(grupo[0]));
     nueva.title=`Semana ${i}`;
     nueva.url=`semana-${i}`;
@@ -1295,15 +1325,15 @@ function fusionar(){
     const fechas=grupo.map(g=>g.updated_at).filter(Boolean).sort();
     if(fechas.length) nueva.updated_at=fechas[fechas.length-1];
     nuevas.push(nueva);
-
+ 
     tarjetas.push({i,etiquetas,notas,body});
     reporte.push(`Nueva semana ${i}  <-  ${etiquetas.join(", ")}`);
     notas.forEach(n=>reporte.push(`    ${n.tipo==="une"?"+":"-"} ${n.texto}`));
     reporte.push("");
   });
-
+ 
   resultado={nuevas,tarjetas,reporte:reporte.join("\n")};
-
+ 
   $("conteo").innerHTML=`<span>${semanas.length}</span> semanas → <span>${total}</span> semanas`;
   dibujarMapa(grupos);
   $("lista").innerHTML = tarjetas.map(t=>`
@@ -1325,7 +1355,7 @@ function fusionar(){
   $("panel-resultados").classList.remove("oculto");
   $("panel-resultados").scrollIntoView({behavior:"smooth",block:"start"});
 }
-
+ 
 function descargar(nombre, contenido, tipo){
   const blob=new Blob([contenido],{type:tipo+";charset=utf-8"});
   const url=URL.createObjectURL(blob);
@@ -1334,7 +1364,7 @@ function descargar(nombre, contenido, tipo){
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(url),1500);
 }
-
+ 
 /* --- eventos --- */
 const zona=$("zona");
 zona.addEventListener("click",()=>$("archivo").click());
@@ -1353,7 +1383,7 @@ $("fusionar").addEventListener("click",()=>{
   try{ fusionar(); }
   catch(err){ mostrarError("La fusión se detuvo.", err.message); }
 });
-
+ 
 $("lista").addEventListener("click",e=>{
   const ver=e.target.dataset.ver, bajar=e.target.dataset.bajar;
   if(ver){
@@ -1374,7 +1404,7 @@ $("lista").addEventListener("click",e=>{
     descargar(`nueva_semana_${bajar}.html`, documentoHTML(`Semana ${bajar}`,t.body), "text/html");
   }
 });
-
+ 
 $("bajar-json").addEventListener("click",()=>
   descargar(`${nombreBase}_fusionado.json`, JSON.stringify(resultado.nuevas,null,2), "application/json"));
 $("bajar-reporte").addEventListener("click",()=>
